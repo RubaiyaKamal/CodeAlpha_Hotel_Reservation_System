@@ -287,8 +287,8 @@
       </div>
 
       <button class="btn btn-primary" style="width:100%;justify-content:center"
-        onclick="closeOverlay('confirm-overlay')">
-        Done
+        onclick="closeOverlay('confirm-overlay'); document.getElementById('reservations').scrollIntoView({behavior:'smooth'}); searchReservations();">
+        Done — View My Booking
       </button>
     </div>
   </div>

@@ -230,15 +230,19 @@ async function handleBookingSubmit(e) {
     bookedAt:      new Date().toISOString(),
   };
 
-  // Persist
+  // Persist reservation
   const reservations = getReservations();
   reservations.push(reservation);
   saveReservations(reservations);
 
-  const rooms = getRooms();
-  const room  = rooms.find(r => r.number === selectedRoom.number);
-  room.available = false;
-  saveRooms(rooms);
+  // Mark room occupied — wrapped so a missing room can never block the confirmation
+  try {
+    const rooms = getRooms();
+    const room  = rooms.find(r => r.number === selectedRoom.number);
+    if (room) { room.available = false; saveRooms(rooms); }
+  } catch (err) {
+    console.warn('room availability update failed:', err);
+  }
 
   closeOverlay('booking-overlay');
   btn.disabled = false;
@@ -246,6 +250,9 @@ async function handleBookingSubmit(e) {
 
   renderRooms();
   showConfirmation(reservation);
+
+  // Pre-fill the reservations search box so the user can find their booking instantly
+  document.getElementById('search-email').value = email;
 }
 
 // ─── Confirmation Modal ───────────────────────────────────────────────────────
@@ -278,7 +285,15 @@ function searchReservations() {
   const grid = document.getElementById('reservations-grid');
 
   if (list.length === 0) {
-    grid.innerHTML = '<p class="no-results">No reservations found for this email address.</p>';
+    const total = getReservations().length;
+    const hint  = total === 0
+      ? 'No bookings have been made through this page yet. Book a room first!'
+      : `There are ${total} booking(s) stored — check the email matches exactly what you used when booking.`;
+    grid.innerHTML = `
+      <div class="no-results">
+        <p>No reservations found for <strong>${email}</strong>.</p>
+        <p style="margin-top:0.5rem;font-size:0.8rem;opacity:0.7">${hint}</p>
+      </div>`;
     return;
   }
 
