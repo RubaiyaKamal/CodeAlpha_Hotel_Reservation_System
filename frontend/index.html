@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grand Horizon Hotel — Reservations</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ═══ NAVBAR ═══════════════════════════════════════════════════════════════ -->
+<nav class="navbar">
+  <div class="navbar-brand">
+    <span class="star">✦</span>
+    <span>Grand Horizon <span class="full">Hotel</span></span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#rooms">Rooms</a></li>
+    <li><a href="#reservations">My Bookings</a></li>
+    <li><a href="#cancel">Cancel</a></li>
+  </ul>
+</nav>
+
+<!-- ═══ HERO ══════════════════════════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="hero-content">
+    <span class="hero-tagline">✦ Luxury Hospitality Since 1989</span>
+    <h1 class="hero-title">
+      Welcome to<br><span>Grand Horizon</span>
+    </h1>
+    <p class="hero-sub">
+      Experience world-class comfort in the heart of the city.
+      Choose from Standard, Deluxe, and Suite rooms crafted for every occasion.
+    </p>
+    <div class="hero-cta">
+      <a href="#rooms" class="btn btn-primary">Explore Rooms</a>
+      <a href="#reservations" class="btn btn-outline">My Bookings</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ROOMS ═════════════════════════════════════════════════════════════════ -->
+<section id="rooms">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Accommodation</span>
+      <h2 class="section-title">Our <span>Rooms & Suites</span></h2>
+      <p class="section-sub">All rooms include complimentary breakfast, high-speed Wi-Fi, and 24/7 room service.</p>
+    </div>
+
+    <div class="filter-bar">
+      <button class="filter-btn active" data-filter="all"      onclick="renderRooms('all')">All Rooms</button>
+      <button class="filter-btn"        data-filter="standard" onclick="renderRooms('standard')">Standard</button>
+      <button class="filter-btn"        data-filter="deluxe"   onclick="renderRooms('deluxe')">Deluxe</button>
+      <button class="filter-btn"        data-filter="suite"    onclick="renderRooms('suite')">Suite</button>
+    </div>
+
+    <div class="room-grid" id="room-grid">
+      <!-- Cards injected by app.js -->
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MY RESERVATIONS ═══════════════════════════════════════════════════════ -->
+<section id="reservations">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label" style="color:var(--gold-light)">Bookings</span>
+      <h2 class="section-title">My <span>Reservations</span></h2>
+      <p class="section-sub">Enter the email you used when booking to view all your reservations.</p>
+    </div>
+
+    <div class="search-bar">
+      <input type="email" id="search-email" placeholder="your@email.com" />
+      <button class="btn btn-primary" onclick="searchReservations()">Search</button>
+    </div>
+
+    <div class="reservations-grid" id="reservations-grid">
+      <!-- Results injected by app.js -->
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CANCEL ════════════════════════════════════════════════════════════════ -->
+<section id="cancel">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-label">Manage Booking</span>
+      <h2 class="section-title">Cancel a <span>Reservation</span></h2>
+    </div>
+
+    <div class="cancel-box">
+      <p>Enter your Reservation ID (found in your booking confirmation) to cancel your stay.</p>
+      <div class="cancel-input-row">
+        <input type="text" id="cancel-id" placeholder="e.g. RES-AB12CD" maxlength="10" />
+        <button class="btn btn-danger" onclick="handleCancellation()">Cancel Booking</button>
+      </div>
+
+      <div class="refund-policy">
+        <h4>Cancellation &amp; Refund Policy</h4>
+        <ul>
+          <li>7+ days before check-in — Full 100% refund</li>
+          <li>3–6 days before check-in — 50% refund</li>
+          <li>Less than 3 days — No refund</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ════════════════════════════════════════════════════════════════ -->
+<footer>
+  <p>© 2026 <span>Grand Horizon Hotel</span> · All rights reserved · Built with Java + HTML/CSS/JS</p>
+</footer>
+
+<!-- ═══ TOAST CONTAINER ═══════════════════════════════════════════════════════ -->
+<div id="toast-container"></div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- BOOKING MODAL                                                              -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="booking-overlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="booking-title">
+
+    <div class="modal-header">
+      <h2 id="booking-title">Book Your Stay</h2>
+      <button class="modal-close" onclick="closeOverlay('booking-overlay')" aria-label="Close">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Room strip -->
+      <div class="room-info-strip">
+        <span class="strip-name" id="strip-name">Room — Type</span>
+        <span class="strip-price" id="strip-price">$0/night</span>
+      </div>
+
+      <form id="booking-form" novalidate>
+
+        <!-- Guest info -->
+        <div class="form-group">
+          <label for="guest-name">Full Name</label>
+          <input type="text" id="guest-name" placeholder="Jane Smith" required />
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="guest-email">Email</label>
+            <input type="email" id="guest-email" placeholder="jane@email.com" required />
+          </div>
+          <div class="form-group">
+            <label for="guest-phone">Phone</label>
+            <input type="tel" id="guest-phone" placeholder="+1 555-0000" required />
+          </div>
+        </div>
+
+        <!-- Dates -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="check-in">Check-In</label>
+            <input type="date" id="check-in" required />
+          </div>
+          <div class="form-group">
+            <label for="check-out">Check-Out</label>
+            <input type="date" id="check-out" required />
+          </div>
+        </div>
+
+        <!-- Price summary (shown after dates selected) -->
+        <div class="price-summary" id="price-summary" style="display:none">
+          <div class="price-row">
+            <span id="sum-room">Room × nights</span>
+            <span id="sum-rate"></span>
+          </div>
+          <div class="price-row total">
+            <span>Total</span>
+            <strong id="sum-total"></strong>
+          </div>
+        </div>
+
+        <!-- Payment -->
+        <div class="form-group">
+          <label for="payment-method">Payment Method</label>
+          <select id="payment-method" required>
+            <option value="Credit Card">Credit Card</option>
+            <option value="Debit Card">Debit Card</option>
+            <option value="Cash">Cash</option>
+            <option value="Online Transfer">Online Transfer</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-ghost" onclick="closeOverlay('booking-overlay')">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="submit-btn">Confirm Booking</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- CONFIRMATION MODAL                                                         -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="confirm-overlay">
+  <div class="modal" role="dialog" aria-modal="true">
+
+    <div class="modal-header">
+      <h2>Booking Confirmed</h2>
+      <button class="modal-close" onclick="closeOverlay('confirm-overlay')" aria-label="Close">✕</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="confirm-header">
+        <div class="confirm-icon">✓</div>
+        <h2>Payment Successful</h2>
+        <p>Your room has been reserved. Please save your Reservation ID.</p>
+      </div>
+
+      <div class="booking-receipt">
+
+        <div class="receipt-section">
+          <div class="receipt-section-title">Reservation</div>
+          <div class="receipt-row">
+            <span class="receipt-label">Reservation ID</span>
+            <span class="receipt-value" id="conf-id" style="font-family:monospace;font-weight:700;color:#c9a84c"></span>
+          </div>
+          <div class="receipt-row">
+            <span class="receipt-label">Transaction ID</span>
+            <span class="receipt-value" id="conf-txn" style="font-family:monospace;font-size:0.75rem"></span>
+          </div>
+        </div>
+
+        <div class="receipt-section">
+          <div class="receipt-section-title">Guest</div>
+          <div class="receipt-row">
+            <span class="receipt-label">Name</span>
+            <span class="receipt-value" id="conf-name"></span>
+          </div>
+          <div class="receipt-row">
+            <span class="receipt-label">Email</span>
+            <span class="receipt-value" id="conf-email"></span>
+          </div>
+          <div class="receipt-row">
+            <span class="receipt-label">Phone</span>
+            <span class="receipt-value" id="conf-phone"></span>
+          </div>
+        </div>
+
+        <div class="receipt-section">
+          <div class="receipt-section-title">Stay</div>
+          <div class="receipt-row">
+            <span class="receipt-label">Room</span>
+            <span class="receipt-value" id="conf-room"></span>
+          </div>
+          <div class="receipt-row">
+            <span class="receipt-label">Description</span>
+            <span class="receipt-value" id="conf-desc"></span>
+          </div>
+          <div class="receipt-row">
+            <span class="receipt-label">Check-In</span>
+            <span class="receipt-value" id="conf-checkin"></span>
+          </div>
+          <div class="receipt-row">
+            <span class="receipt-label">Check-Out</span>
+            <span class="receipt-value" id="conf-checkout"></span>
+          </div>
+          <div class="receipt-row">
+            <span class="receipt-label">Duration</span>
+            <span class="receipt-value" id="conf-nights"></span>
+          </div>
+          <div class="receipt-row">
+            <span class="receipt-label">Rate</span>
+            <span class="receipt-value" id="conf-rate"></span>
+          </div>
+        </div>
+
+        <div class="receipt-section receipt-total">
+          <div class="receipt-section-title">Payment</div>
+          <div class="receipt-row">
+            <span class="receipt-label">Method</span>
+            <span class="receipt-value" id="conf-payment"></span>
+          </div>
+          <div class="receipt-row" style="margin-top:0.6rem;padding-top:0.6rem;border-top:1px solid #e8e4de">
+            <span class="receipt-label" style="font-size:0.95rem;font-weight:700;color:#1a1a2e">Total Charged</span>
+            <span class="receipt-value" id="conf-total" style="color:#c9a84c;font-size:1.1rem;font-weight:800"></span>
+          </div>
+        </div>
+
+      </div>
+
+      <button class="btn btn-primary" style="width:100%;justify-content:center"
+        onclick="closeOverlay('confirm-overlay')">
+        Done
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCRIPTS ═══════════════════════════════════════════════════════════════ -->
+<script src="app.js"></script>
+</body>
+</html>
