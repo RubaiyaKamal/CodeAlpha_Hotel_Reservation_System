@@ -269,12 +269,19 @@ section { padding: 5rem 2rem; }
 }
 .search-bar input {
   flex: 1; padding: 0.8rem 1.2rem; border-radius: 50px;
-  border: 2px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.08); color: var(--white);
+  border: 2px solid rgba(255,255,255,0.2);
+  background: #0f2744;
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;   /* overrides browser autofill colour */
   font-size: 0.9rem; outline: none; transition: var(--transition);
 }
-.search-bar input::placeholder { color: rgba(255,255,255,0.35); }
-.search-bar input:focus { border-color: var(--gold); background: rgba(255,255,255,0.12); }
+.search-bar input::placeholder { color: rgba(255,255,255,0.4); }
+.search-bar input:focus {
+  border-color: var(--gold);
+  background: #163660;
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
+}
 
 .reservations-grid {
   display: grid;

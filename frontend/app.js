@@ -47,7 +47,10 @@ const KEYS = { rooms: 'gh_rooms', reservations: 'gh_reservations', ver: 'gh_room
 // ─── Storage helpers ──────────────────────────────────────────────────────────
 
 function getRooms()        { return JSON.parse(localStorage.getItem(KEYS.rooms)); }
-function getReservations() { return JSON.parse(localStorage.getItem(KEYS.reservations)); }
+function getReservations() {
+  try { return JSON.parse(localStorage.getItem(KEYS.reservations)) || []; }
+  catch { return []; }
+}
 function saveRooms(r)      { localStorage.setItem(KEYS.rooms, JSON.stringify(r)); }
 function saveReservations(r){ localStorage.setItem(KEYS.reservations, JSON.stringify(r)); }
 
@@ -370,4 +373,8 @@ document.addEventListener('DOMContentLoaded', () => {
     .addEventListener('change', updatePriceSummary);
   document.getElementById('check-out')
     .addEventListener('change', updatePriceSummary);
+
+  // Allow pressing Enter in the reservations search bar
+  document.getElementById('search-email')
+    .addEventListener('keydown', e => { if (e.key === 'Enter') searchReservations(); });
 });
