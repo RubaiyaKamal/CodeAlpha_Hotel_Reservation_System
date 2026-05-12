@@ -2,34 +2,47 @@
 
 // ─── Seed Data ────────────────────────────────────────────────────────────────
 
+// Unsplash CDN helper — width/height cropped, auto format, 80% quality
+const UNS = id =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=800&h=480&q=80`;
+
 const SEED_ROOMS = [
   { number: 101, type: 'Standard', price: 80,  available: true,
     desc: 'Queen bed with garden view',
-    amenities: ['Queen Bed', 'Garden View', 'Wi-Fi', 'AC'] },
+    amenities: ['Queen Bed', 'Garden View', 'Wi-Fi', 'AC'],
+    img: UNS('photo-1631049307264-da0ec9d70304') },
   { number: 102, type: 'Standard', price: 80,  available: true,
     desc: 'Twin beds near the pool',
-    amenities: ['Twin Beds', 'Pool Access', 'Wi-Fi', 'AC'] },
+    amenities: ['Twin Beds', 'Pool Access', 'Wi-Fi', 'AC'],
+    img: UNS('photo-1566665797739-1674de7a421a') },
   { number: 103, type: 'Standard', price: 85,  available: true,
     desc: 'Corner room with queen bed and city view',
-    amenities: ['Queen Bed', 'City View', 'Wi-Fi', 'AC'] },
+    amenities: ['Queen Bed', 'City View', 'Wi-Fi', 'AC'],
+    img: UNS('photo-1618773928121-c32242e63f39') },
   { number: 201, type: 'Deluxe',   price: 150, available: true,
     desc: 'King bed with city panorama and mini-bar',
-    amenities: ['King Bed', 'Mini-Bar', 'City View', 'Balcony'] },
+    amenities: ['King Bed', 'Mini-Bar', 'City View', 'Balcony'],
+    img: UNS('photo-1611892440504-42a792e24d32') },
   { number: 202, type: 'Deluxe',   price: 155, available: true,
     desc: 'King bed with pool view and balcony',
-    amenities: ['King Bed', 'Pool View', 'Balcony', 'Bathtub'] },
+    amenities: ['King Bed', 'Pool View', 'Balcony', 'Bathtub'],
+    img: UNS('photo-1590490360182-c33d57733427') },
   { number: 203, type: 'Deluxe',   price: 160, available: true,
     desc: 'Corner room with balcony and sea view',
-    amenities: ['King Bed', 'Sea View', 'Balcony', 'Lounge'] },
+    amenities: ['King Bed', 'Sea View', 'Balcony', 'Lounge'],
+    img: UNS('photo-1578683010236-d716f9a3f461') },
   { number: 301, type: 'Suite',    price: 300, available: true,
     desc: 'Luxury suite with living area and jacuzzi',
-    amenities: ['King Bed', 'Living Area', 'Jacuzzi', 'Butler'] },
+    amenities: ['King Bed', 'Living Area', 'Jacuzzi', 'Butler'],
+    img: UNS('photo-1582719478250-c89cae4dc85b') },
   { number: 302, type: 'Suite',    price: 350, available: true,
     desc: 'Presidential suite with private terrace and butler',
-    amenities: ['King Bed', 'Private Terrace', 'Butler', 'Jacuzzi'] },
+    amenities: ['King Bed', 'Private Terrace', 'Butler', 'Jacuzzi'],
+    img: UNS('photo-1571003123894-1f0594d2b5d9') },
 ];
 
-const KEYS = { rooms: 'gh_rooms', reservations: 'gh_reservations' };
+const ROOMS_VER = 2;   // bump when SEED_ROOMS structure changes
+const KEYS = { rooms: 'gh_rooms', reservations: 'gh_reservations', ver: 'gh_rooms_ver' };
 
 // ─── Storage helpers ──────────────────────────────────────────────────────────
 
@@ -39,7 +52,11 @@ function saveRooms(r)      { localStorage.setItem(KEYS.rooms, JSON.stringify(r))
 function saveReservations(r){ localStorage.setItem(KEYS.reservations, JSON.stringify(r)); }
 
 function initData() {
-  if (!localStorage.getItem(KEYS.rooms))        saveRooms(SEED_ROOMS);
+  // Re-seed rooms whenever ROOMS_VER bumps (picks up new fields like img)
+  if (localStorage.getItem(KEYS.ver) !== String(ROOMS_VER)) {
+    saveRooms(SEED_ROOMS);
+    localStorage.setItem(KEYS.ver, String(ROOMS_VER));
+  }
   if (!localStorage.getItem(KEYS.reservations)) saveReservations([]);
 }
 
@@ -96,11 +113,19 @@ function renderRooms(filter) {
     return;
   }
 
+  const fallback = t => `this.onerror=null;this.parentElement.classList.add('room-img-${t.toLowerCase()}');this.style.display='none'`;
+
   grid.innerHTML = filtered.map(room => `
     <div class="room-card">
-      <div class="room-image room-img-${room.type.toLowerCase()}">
+      <div class="room-image">
+        <img
+          src="${room.img || ''}"
+          alt="Room ${room.number} — ${room.type}"
+          class="room-photo"
+          loading="lazy"
+          onerror="${fallback(room.type)}"
+        />
         <div class="room-image-overlay"></div>
-        <span class="room-image-icon">${{ Standard: '🛏', Deluxe: '🏨', Suite: '👑' }[room.type] || '🛏'}</span>
         <span class="room-badge ${room.type.toLowerCase()}">${room.type}</span>
         <div class="room-number">Room ${room.number}</div>
       </div>
